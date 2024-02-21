@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const { Musician } = require("../models/index")
+const { check, validationResult } = require('express-validator')
+
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -19,9 +21,17 @@ app.get("/musicians/:id", async (req, res) => {
     res.json(myMusicians);
 });
 
-app.post('/musicians', async (req,res) => {
-    const musician = await Musician.create(req.body);
-    res.json(musician);
+app.post('/musicians', [
+    check('name').not().isEmpty(),
+    check('instrument').not().isEmpty(),
+], async (req,res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.json({errors: errors.array()})
+    } else {
+        const musician = await Musician.create(req.body);
+        res.json(musician);
+    }
 });
 
 app.put('/musicians/:id', async (req,res) => {

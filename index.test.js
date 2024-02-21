@@ -57,6 +57,16 @@ describe('./musicians endpoint', () => {
             })
         );
     });
+    test('testing failed POST musicians endpoint returns array of errors', async () => {
+        const res = await request(app)
+            .post('/musicians')
+            .send({
+                name: 'test'
+            });
+        //expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('errors');
+        expect(Array.isArray(res.body.errors)).toBe(true);
+    });
     test('testing put musicians endpoint', async () => {
         const res = await request(app)
             .put('/musicians/' + 1)
